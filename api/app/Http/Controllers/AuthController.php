@@ -2,16 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AccessRole;
 use Validator;
-use Carbon\Carbon;
 use App\Models\User;
-use App\Constant\Status;
-use App\Events\AuthEvent;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Traits\TranslatableResponse;
 use Illuminate\Support\Facades\Auth;
@@ -30,31 +22,26 @@ class AuthController extends Controller
     {
         try {
             $validator = Validator::make(request()->all(), [
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'email' => [
-                    'required',
-                    'email',
-                    Rule::unique('users')->where('is_deleted', 0)
-                ],
-                'password' => !auth()->check() ? 'required|min:8' : '',
+                'name' => 'required|unique:users,name',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|min:8|confirmed',
             ]);
 
             if ($validator->fails()) {
                 return $this->translateFailedResponse(400, $validator->messages()->first());
             }
 
-            $user = new User;
-            $user->first_name = request()->first_name;
-            $user->last_name = request()->last_name;
-            $user->middle_name = request()->middle_name;
+            $user = new User();
+            $user->name = request()->name;
             $user->email = request()->email;
 
             if (isset(request()->password) && request()->password) {
                 $user->password = bcrypt(request()->password);
             }
 
-            return $this->translateSuccessResponse("Registered successfully!", $user);
+            $user->save();
+
+            return $this->translateSuccessResponse("You're all set. Click the Sign In button below and start exploring words your way!", $user);
         } catch (\Exception $e) {
             return $this->translateExceptionResponse($e);
         }
@@ -109,7 +96,8 @@ class AuthController extends Controller
     public function me()
     {
         try {
-            return $this->translateSuccessResponse(null, auth()->user());
+            $data = request()->user();
+            return $this->translateSuccessResponse(null, $data);
         } catch (\Exception $e) {
             return $this->translateExceptionResponse($e);
         }
@@ -123,7 +111,7 @@ class AuthController extends Controller
     public function logout()
     {
         try {
-            auth()->logout();
+            Auth::user()->tokens()->delete();
             return $this->translateSuccessResponse("Successfully logged out");
         } catch (\Exception $e) {
             return $this->translateExceptionResponse($e);

@@ -18,12 +18,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name',
-        'middle_name',
-        'last_name',
+        'name',
         'email',
         'password',
-        'status',
     ];
 
     /**
@@ -59,49 +56,18 @@ class User extends Authenticatable
         ];
     }
 
-    protected $appends = [
-        "full_name"
-    ];
-
     public $keyType = 'varchar';
 
     public $incrementing = false;
 
 
-    public static function boot()
-    {
-        parent::boot();
-        static::created(function ($model) {
-            /**
-             * Load all model's relationships
-             */
-            $relationships = $model->relationships;
-            if ($relationships) {
-                $model->load($relationships);
-            }
-            event(new ModelNewData(
-                class_basename($model::class),
-                $model
-            ));
-        });
-    }
-
     public static function getTableName()
     {
         return with(new static)->getTable();
     }
-    public function getFullNameAttribute()
-    {
-        return trim($this->first_name . ' ' . $this->last_name);
-    }
 
-    public function setFirstNameAttribute($value)
+    public function setNameAttribute($value)
     {
-        return $this->attributes['first_name'] = ucwords($value);
-    }
-
-    public function setLastNameAttribute($value)
-    {
-        return $this->attributes['last_name'] = ucwords($value);
+        return $this->attributes['name'] = ucwords($value);
     }
 }

@@ -1,25 +1,42 @@
 <script setup>
 import { ref } from 'vue'
-
 import auth from '@/api/auth.js'
 
 import dialogComponent from '@/components/dialog.vue'
 
 var form = ref({
-  email: 'resurreccionclifford@gmail.com',
-  password: 'islyesr123',
+  name: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
 })
 
 var dialogContent = ref({
   show: false,
 })
 
-async function handleSubmit() {
+async function handleSubmit(e) {
   try {
-    const { data } = await auth.login(form.value)
+    const formWrapper = e.target
+    if (!formWrapper.checkValidity()) {
+      formWrapper.reportValidity()
+      return
+    }
+    const { data } = await auth.register(form.value)
+    if (data.statusCode == 200) {
+      dialogContent.value.title = `Hey ${data?.data?.name}, welcome to MyDictionary!`
+      dialogContent.value.body = data.message
+      dialogContent.value.button = {
+        label: 'Sign In',
+        action: () => {
+          window.location.href = '/'
+        },
+      }
+      dialogContent.value.show = true
+    }
   } catch (e) {
-    var response = e.response?.data
-    if (response?.statusCode == 401) {
+    var response = e.response.data
+    if (response.statusCode == 400) {
       dialogContent.value.title = 'Error'
       dialogContent.value.body = response.message
       dialogContent.value.button = {
@@ -35,17 +52,49 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-100">
+  <div class="min-h-screen bg-slate-100 flex items-center justify-center">
     <div
       class="bg-white p-8 rounded-2xl shadow-xl border-t border-gray-100 w-full max-w-md transform transition-all duration-300 hover:shadow-2xl"
     >
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
-        <p class="text-gray-600">Sign in to your account</p>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
+
+        <p class="text-gray-600">Join us today</p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <div class="space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <div class="relative">
+              <input
+                id="name"
+                v-model="form.name"
+                type="text"
+                pattern="^[A-Za-z\s]+$"
+                required
+                title="Full name must not contain numbers and special characters"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+                placeholder="John Doe"
+              />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1"
               >Email Address</label
@@ -56,6 +105,7 @@ async function handleSubmit() {
                 v-model="form.email"
                 type="email"
                 required
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                 class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
                 placeholder="you@example.com"
               />
@@ -87,6 +137,8 @@ async function handleSubmit() {
                 v-model="form.password"
                 type="password"
                 required
+                pattern=".{8,}"
+                title="Password must be 6 characters or more"
                 class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
                 placeholder="••••••••"
               />
@@ -107,6 +159,39 @@ async function handleSubmit() {
               </div>
             </div>
           </div>
+
+          <div>
+            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1"
+              >Confirm Password</label
+            >
+            <div class="relative">
+              <input
+                id="password_confirmation"
+                v-model="form.password_confirmation"
+                type="password"
+                required
+                pattern=".{8,}"
+                title="Password must be 6 characters or more"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+                placeholder="••••••••"
+              />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div>
@@ -114,15 +199,15 @@ async function handleSubmit() {
             type="submit"
             class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.01]"
           >
-            Sign in
+            Register
           </button>
         </div>
       </form>
 
       <div class="mt-6 text-center">
         <p class="text-sm text-gray-600">
-          Don't have an account?
-          <a href="/register" class="font-medium text-blue-600 hover:text-blue-500">Sign up</a>
+          Already have an account?
+          <a href="/" class="font-medium text-blue-600 hover:text-blue-500">Sign in</a>
         </p>
       </div>
     </div>
