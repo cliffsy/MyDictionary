@@ -93,6 +93,43 @@ LOCK TABLES `failed_jobs` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `favorites`
+--
+
+DROP TABLE IF EXISTS `favorites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `favorites` (
+  `id` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `word` varchar(258) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phonetics` json DEFAULT NULL,
+  `definitions` json DEFAULT NULL,
+  `partOfSpeech` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `examples` json DEFAULT NULL,
+  `synonyms` json DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `created_by` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_by` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `deleted_by` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_deleted` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `favorites`
+--
+
+LOCK TABLES `favorites` WRITE;
+/*!40000 ALTER TABLE `favorites` DISABLE KEYS */;
+/*!40000 ALTER TABLE `favorites` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `job_batches`
 --
 
@@ -164,7 +201,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -173,7 +210,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'2025_06_23_232715_create_personal_access_tokens_table',1);
+INSERT INTO `migrations` VALUES (2,'2025_06_23_232715_create_personal_access_tokens_table',1),(6,'2025_06_25_000000_create_favorites_table',2);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,7 +259,7 @@ CREATE TABLE `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,7 +268,6 @@ CREATE TABLE `personal_access_tokens` (
 
 LOCK TABLES `personal_access_tokens` WRITE;
 /*!40000 ALTER TABLE `personal_access_tokens` DISABLE KEYS */;
-INSERT INTO `personal_access_tokens` VALUES (34,'App\\Models\\User','9f3b6138-3613-4995-b512-f24782f35d52','access_token','bd05f295b2fe86c5105fbc163926c1db89ce5cb8e33a2d84e19a1a6095e876ae','[\"*\"]',NULL,NULL,'2025-06-24 14:09:34','2025-06-24 14:09:34'),(36,'App\\Models\\User','9f3b7abc-dcaf-418e-b560-69b77ff4148a','access_token','608dbc631f923200256b7740e0b3e17beb8f0045d1a623551464435e6867984d','[\"*\"]',NULL,NULL,'2025-06-24 15:15:25','2025-06-24 15:15:25');
 /*!40000 ALTER TABLE `personal_access_tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -298,7 +334,6 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('1','Clifford','resurreccionclifford@gmail.com','2024-08-30 16:00:00','$2y$12$XYJJWKx0tJT2XTOTtRt.me.vGOQlR/L7bO3MbyUh/vl4kKbj6WNGS',NULL,1750796983,NULL,'2025-06-24 20:29:43',NULL,NULL,NULL,NULL,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -311,4 +346,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-25  4:32:05
+-- Dump completed on 2025-06-25 17:14:34
