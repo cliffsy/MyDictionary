@@ -48,9 +48,12 @@ async function search() {
       </div>
 
       <div class="flex items-center gap-6">
-        <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+        <router-link
+          to="/favorites"
+          class="text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+        >
           My Favorites
-        </a>
+        </router-link>
         <user-menu />
       </div>
     </div>
@@ -83,7 +86,7 @@ async function search() {
       </div>
 
       <div v-if="words.length > 0" class="mt-18">
-        <word-cards v-model="words" />
+        <word-cards v-model="words" auto-expand />
       </div>
 
       <!-- Footer -->

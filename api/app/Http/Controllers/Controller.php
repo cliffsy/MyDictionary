@@ -116,8 +116,6 @@ class Controller extends BaseController
     {
         try {
             $query = $model;
-            $query->selectRaw($model::getTableName() . ".*");
-            $this->applyRelationsForSingle($query, $request, $model);
             $data = $query;
             return $this->translateSuccessResponse(null, $data);
         } catch (\Exception $e) {

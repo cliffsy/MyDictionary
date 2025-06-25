@@ -58,19 +58,19 @@ class CustomModel extends BaseModel
             }
         });
 
-        static::created(function ($model) {
-            /**
-             * Load all model's relationships
-             */
-            $relationships = $model->relationships;
-            if ($relationships) {
-                $model->load($relationships);
-            }
-            event(new ModelNewData(
-                class_basename($model::class),
-                $model
-            ));
-        });
+        // static::created(function ($model) {
+        //     /**
+        //      * Load all model's relationships
+        //      */
+        //     $relationships = $model->relationships;
+        //     if ($relationships) {
+        //         $model->load($relationships);
+        //     }
+        //     event(new ModelNewData(
+        //         class_basename($model::class),
+        //         $model
+        //     ));
+        // });
 
         static::updating(function ($model) {
             if ($model->from_mobile) {
