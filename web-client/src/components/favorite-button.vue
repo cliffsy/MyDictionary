@@ -3,13 +3,20 @@ import { ref, onMounted, watch } from 'vue'
 
 import favorites from '@/api/favorites'
 
-const emit = defineEmits('update:model-value')
+const props = defineProps({
+  hideDataOnRemove: {
+    type: Boolean,
+    default: false,
+  },
+})
+const emit = defineEmits(['update:model-value'])
 
 var model = defineModel({ default: {} })
 var isFavorite = ref(false)
 var wordDefinition = ref({})
 
 onMounted(() => {
+  isFavorite.value = false
   if (model.value?.word) {
     fetchWord(model.value.word)
   }
@@ -32,6 +39,11 @@ async function toggleFavorite() {
       await favorites.remove(wordDefinition.value)
       wordDefinition.value = null
       delete model.value.id
+
+      if (props.hideDataOnRemove) {
+        model.value.hidden = true
+      }
+
       emit('update:model-value', model.value)
     }
   } catch (e) {
@@ -54,7 +66,10 @@ watch(
   <button
     @click="toggleFavorite"
     aria-label="Bookmark"
-    class="text-gray-400 cursor-pointer hover:text-yellow-400 transition"
+    :class="[
+      'text-gray-400 cursor-pointer hover:text-yellow-400 transition',
+      isFavorite ? 'text-yellow-400' : '',
+    ]"
     title="Save to My Favorites"
   >
     <!-- Filled bookmark (active) -->

@@ -56,6 +56,16 @@ class FavoritesController extends Controller
         }
     }
 
+    public function update($id)
+    {
+        try {
+            $data = Favorite::find($id)->update(request()->all());
+            return $this->translateSuccessResponse("Word definition saved to your favorites", $data);
+        } catch (\Exception $e) {
+            return $this->translateExceptionResponse($e);
+        }
+    }
+
     public function delete($id)
     {
         try {

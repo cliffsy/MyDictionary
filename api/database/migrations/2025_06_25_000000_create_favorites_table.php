@@ -19,6 +19,8 @@ return new class extends Migration
                 $table->string('partOfSpeech')->nullable();
                 $table->json('examples')->nullable();
                 $table->json('synonyms')->nullable();
+                $table->text('notes')->nullable();
+
 
                 $table->timestamp('created_at');
                 $table->datetime('updated_at')->nullable();

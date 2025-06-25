@@ -3,16 +3,42 @@ import { ref } from 'vue'
 
 import userMenu from '@/components/user-menu.vue'
 import wordCards from '@/components/word-cards.vue'
+import dialogComponent from '@/components/dialog.vue'
+import loaderOverlay from '@/components/loader-overlay.vue'
 
 import dictionary from '@/api/dictionary.js'
 
 const query = ref('')
 var words = ref([])
 
+var dialogContent = ref({
+  show: false,
+})
+
+var loading = ref(false)
+
 async function search() {
-  if (!query.value) return
-  const { data } = await dictionary.search(query.value)
-  words.value = data
+  try {
+    if (!query.value) return
+    loading.value = true
+    const { data } = await dictionary.search(query.value)
+    words.value = data
+    loading.value = false
+  } catch (e) {
+    loading.value = false
+    var response = e.response?.data
+    if (response?.statusCode == 404) {
+      dialogContent.value.title = response.message
+      dialogContent.value.body = 'Try checking your spelling or search for a different word.'
+      dialogContent.value.button = {
+        label: 'Okay',
+        action: () => {
+          dialogContent.value.show = false
+        },
+      }
+      dialogContent.value.show = true
+    }
+  }
 }
 </script>
 
@@ -95,6 +121,8 @@ async function search() {
       </footer>
     </div>
   </div>
+  <dialogComponent v-model="dialogContent.show" v-bind="dialogContent" />
+  <loader-overlay :show="loading" />
 </template>
 
 <style scoped>

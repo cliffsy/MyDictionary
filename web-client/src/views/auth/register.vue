@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import auth from '@/api/auth.js'
 
 import dialogComponent from '@/components/dialog.vue'
+import loaderOverlay from '@/components/loader-overlay.vue'
 
 var form = ref({
   name: '',
@@ -15,6 +16,8 @@ var dialogContent = ref({
   show: false,
 })
 
+var loading = ref(false)
+
 async function handleSubmit(e) {
   try {
     const formWrapper = e.target
@@ -22,6 +25,7 @@ async function handleSubmit(e) {
       formWrapper.reportValidity()
       return
     }
+    loading.value = true
     const { data } = await auth.register(form.value)
     if (data.statusCode == 200) {
       dialogContent.value.title = `Hey ${data?.data?.name}, welcome to MyDictionary!`
@@ -34,7 +38,9 @@ async function handleSubmit(e) {
       }
       dialogContent.value.show = true
     }
+    loading.value = false
   } catch (e) {
+    loading.value = false
     var response = e.response.data
     if (response.statusCode == 400) {
       dialogContent.value.title = 'Error'
@@ -214,6 +220,7 @@ async function handleSubmit(e) {
   </div>
 
   <dialogComponent v-model="dialogContent.show" v-bind="dialogContent" />
+  <loader-overlay :show="loading" />
 </template>
 
 <style></style>

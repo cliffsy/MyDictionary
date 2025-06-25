@@ -3,14 +3,22 @@ import { ref, onMounted } from 'vue'
 
 import userMenu from '@/components/user-menu.vue'
 import wordCards from '@/components/word-cards.vue'
+import loaderOverlay from '@/components/loader-overlay.vue'
 
 import favorites from '@/api/favorites.js'
 
 var words = ref([])
+var loading = ref(false)
 
 onMounted(async () => {
-  const { data } = await favorites.list()
-  words.value = data
+  try {
+    loading.value = true
+    const { data } = await favorites.list()
+    words.value = data
+    loading.value = false
+  } catch (e) {
+    loading.value = false
+  }
 })
 </script>
 
@@ -44,7 +52,7 @@ onMounted(async () => {
     >
       <div v-if="words.length > 0" class="mt-18">
         <span class="text-2xl">My Favorites</span>
-        <word-cards v-model="words" />
+        <word-cards v-model="words" hide-data-on-remove has-notes />
       </div>
 
       <!-- Footer -->
@@ -53,6 +61,7 @@ onMounted(async () => {
       </footer>
     </div>
   </div>
+  <loader-overlay :show="loading" />
 </template>
 
 <style scoped>

@@ -14,6 +14,7 @@ class Favorite extends CustomModel
         'partOfSpeech',
         'examples',
         'synonyms',
+        'notes'
     ];
 
     protected $casts = [
