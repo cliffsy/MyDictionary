@@ -4,20 +4,25 @@ import { ref } from 'vue'
 import auth from '@/api/auth.js'
 
 import dialogComponent from '@/components/dialog.vue'
+import loaderOverlay from '@/components/loader-overlay.vue'
 
 var form = ref({
-  email: 'resurreccionclifford@gmail.com',
-  password: 'islyesr123',
+  email: null,
+  password: null,
 })
 
 var dialogContent = ref({
   show: false,
 })
 
+var loading = ref(false)
+
 async function handleSubmit() {
   try {
-    const { data } = await auth.login(form.value)
+    loading.value = true
+    await auth.login(form.value)
   } catch (e) {
+    loading.value = false
     var response = e.response?.data
     if (response?.statusCode == 401) {
       dialogContent.value.title = 'Error'
@@ -129,6 +134,7 @@ async function handleSubmit() {
   </div>
 
   <dialogComponent v-model="dialogContent.show" v-bind="dialogContent" />
+  <loader-overlay :show="loading" />
 </template>
 
 <style></style>

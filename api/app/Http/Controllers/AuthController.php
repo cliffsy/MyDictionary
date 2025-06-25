@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Traits\TranslatableResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -22,8 +23,19 @@ class AuthController extends Controller
     {
         try {
             $validator = Validator::make(request()->all(), [
-                'name' => 'required|unique:users,name',
-                'email' => 'required|email|unique:users,email',
+                'name' => [
+                    'required',
+                    Rule::unique('users')->where(function ($query) {
+                        return $query->where('is_deleted', 0);
+                    })
+                ],
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('users')->where(function ($query) {
+                        return $query->where('is_deleted', 0);
+                    })
+                ],
                 'password' => 'required|min:8|confirmed',
             ]);
 
